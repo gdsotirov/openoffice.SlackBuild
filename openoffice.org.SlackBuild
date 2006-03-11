@@ -1,0 +1,95 @@
+#!/bin/sh
+#
+# Slackware build script for OpenOffice.org
+#
+
+. /etc/slack-package.conf
+
+NAME=openoffice.org
+VERSION_MAJOR=2
+VERSION_MINOR=0
+VERSION_PATCH=2
+VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
+BUILD=1
+LOCALE=bg
+
+ARCH=i586
+
+if [ ! -d $TMP ]; then
+  mkdir -p $TMP
+fi
+
+# Package build location
+PKG=$TMP/package-$NAME
+mkdir -p $PKG
+
+# Extract data
+LOG_FILE=$CWD/package-$NAME-$VERSION.log
+cd $TMP
+# This package is retrived from http://ftp.spnet.net/ooo-bg/2.0.2/
+RPM_ARCHIVE="OOo_${VERSION}_LinuxIntel_install_bg-en_rpm"
+echo "Extracting archive $RPM_ARCHIVE.tar.gz..."
+tar -zxvf $CWD/$RPM_ARCHIVE.tar.gz > $LOG_FILE 2>&1
+SRC=$TMP/$RPM_ARCHIVE
+cd $SRC/RPMS
+echo "Extracting files from rpm packages..."
+unrpm *.rpm >> $LOG_FILE 2>&1
+mv opt $PKG
+cd desktop-integration
+echo "Fixing integration..."
+unrpm openoffice.org-redhat-menus-$VERSION-*.noarch.rpm >> $LOG_FILE 2>&1
+mv usr $PKG
+rm -r $PKG/usr/share/applnk-redhat
+rm $PKG/usr/share/applications/*.desktop
+install -m 644 $CWD/*.desktop $PKG/usr/share/applications
+mkdir -p $PKG/opt/kde/share/icons
+cp -r $PKG/usr/share/icons/hicolor $PKG/opt/kde/share/icons
+cp -r $PKG/usr/share/icons/locolor $PKG/opt/kde/share/icons
+mkdir -p $PKG/usr/share/pixmaps
+install -m 644 $PKG/usr/share/icons/hicolor/32x32/apps/* $PKG/usr/share/pixmaps
+mv $PKG/usr/share/mimelnk $PKG/opt/kde/share/
+cp -f $CWD/$NAME-$VERSION_MAJOR.$VERSION_MINOR* $PKG/usr/bin
+
+# Create service infos
+echo "Creating service information..."
+mkdir -p $PKG/install
+install -m 644 $CWD/slack-desc $PKG/install
+SRCDIR=$PKG/usr/src/slackbuilds/$NAME-$VERSION
+mkdir -p $SRCDIR
+install -m 644 $CWD/$NAME.SlackBuild $SRCDIR
+install -m 644 $CWD/slack-desc $SRCDIR
+install -m 644 $CWD/*.desktop $SRCDIR
+install -m 644 $CWD/$NAME-$VERSION_MAJOR.$VERSION_MINOR* $SRCDIR
+
+# Fix permisions
+echo "Setting file and directory permissions..."
+cd $PKG
+chown -R root:root *
+for dir in `find ./ -type d`; do chmod 755 $dir; done
+bin_perms $PKG
+
+# Create documentation
+DOCFILES="$DOCFILES LICENSE*"
+echo "Creating the documentation for $NAME-$VERSION..."
+cd $PKG/opt/$NAME$VERSION_MAJOR.$VERSION_MINOR/licenses
+create_docs $PKG $NAME-$VERSION
+cd $PKG/opt/$NAME$VERSION_MAJOR.$VERSION_MINOR/readmes
+create_docs $PKG $NAME-$VERSION
+
+# Make the package
+echo "Creating package $NAME-$VERSION..."
+cd $PKG
+makepkg -l y -c n $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz >> $LOG_FILE 2>&1
+cd $PKG_DIR
+cp $CWD/slack-desc $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txt
+md5sum $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz > $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz.md5
+
+# Clean up (optionally)
+if [ "$1" = "--cleanup" ]; then
+  echo "Cleaning up..."
+  rm -rf $SRC
+  rm -rf $PKG
+fi
+
+echo "All done."
+

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec /opt/openoffice.org2.0/program/spadmin 
