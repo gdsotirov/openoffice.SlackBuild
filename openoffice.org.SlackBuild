@@ -8,7 +8,7 @@
 NAME=openoffice.org
 VERSION_MAJOR=2
 VERSION_MINOR=0
-VERSION_PATCH=2
+VERSION_PATCH=3
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
@@ -26,7 +26,7 @@ mkdir -p $PKG
 # Extract data
 LOG_FILE=$CWD/package-$NAME-$VERSION.log
 cd $TMP
-# This package is retrived from http://ftp.spnet.net/ooo-bg/2.0.2/
+# This package is retrived from http://ftp.spnet.net/ooo-bg/2.0.3/
 RPM_ARCHIVE="OOo_${VERSION}_LinuxIntel_install_bg-en_rpm"
 echo "Extracting archive $RPM_ARCHIVE.tar.gz..."
 tar -zxvf $CWD/$RPM_ARCHIVE.tar.gz > $LOG_FILE 2>&1
