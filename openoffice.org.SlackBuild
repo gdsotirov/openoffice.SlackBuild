@@ -2,6 +2,8 @@
 #
 # Slackware build script for OpenOffice.org
 #
+# Rewritten by Georgi D. Sotirov <gdsotirov@dir.bg>
+#
 
 . /etc/slack-package.conf
 
@@ -10,10 +12,14 @@ VERSION_MAJOR=2
 VERSION_MINOR=0
 VERSION_PATCH=3
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-BUILD=1
+BUILD=2
 LOCALE=bg
 
 ARCH=i586
+
+OOo_PACK="OOo_${VERSION}_LinuxIntel_install_bg-en_rpm"
+BGO='bgoffice'
+BGO_PACK='OOo-full-pack'
 
 if [ ! -d $TMP ]; then
   mkdir -p $TMP
@@ -27,16 +33,23 @@ mkdir -p $PKG
 LOG_FILE=$CWD/package-$NAME-$VERSION.log
 cd $TMP
 # This package is retrived from http://ftp.spnet.net/ooo-bg/2.0.3/
-RPM_ARCHIVE="OOo_${VERSION}_LinuxIntel_install_bg-en_rpm"
-echo "Extracting archive $RPM_ARCHIVE.tar.gz..."
-tar -zxvf $CWD/$RPM_ARCHIVE.tar.gz > $LOG_FILE 2>&1
-SRC=$TMP/$RPM_ARCHIVE
-cd $SRC/RPMS
+OOo_ARCHIVE="$OOo_PACK.tar.gz"
+echo "Extracting archive $OOo_ARCHIVE..."
+tar -zxvf $CWD/$OOo_ARCHIVE > $LOG_FILE 2>&1
+BGO_ARCHIVE="$BGO_PACK.zip"
+echo "Extracting archive $BGO_ARCHIVE..."
+unzip $CWD/$BGO_ARCHIVE > $LOG_FILE 2>&1
+
+SRC=$TMP/$OOo_PACK
+SRC_BGO=$TMP/$BGO_PACK
+
 echo "Extracting files from rpm packages..."
+cd $SRC/RPMS
 unrpm *.rpm >> $LOG_FILE 2>&1
 mv opt $PKG
-cd desktop-integration
+
 echo "Fixing integration..."
+cd desktop-integration
 unrpm openoffice.org-redhat-menus-$VERSION-*.noarch.rpm >> $LOG_FILE 2>&1
 mv usr $PKG
 rm -r $PKG/usr/share/applnk-redhat
@@ -50,7 +63,17 @@ install -m 644 $PKG/usr/share/icons/hicolor/32x32/apps/* $PKG/usr/share/pixmaps
 mv $PKG/usr/share/mimelnk $PKG/opt/kde/share/
 cp -f $CWD/$NAME-$VERSION_MAJOR.$VERSION_MINOR* $PKG/usr/bin
 
+# Integration of bgoffice dictionaries
+echo "Integrating BG Office..."
+cd $SRC_BGO
+install -m 644 *.aff *.dic *.dat *.idx $PKG/opt/$NAME$VERSION_MAJOR.$VERSION_MINOR/share/dict/ooo
+cat $CWD/bgo_dict >> $PKG/opt/$NAME$VERSION_MAJOR.$VERSION_MINOR/share/dict/ooo/dictionary.lst
+install -m 755 -d $PKG/usr/doc/$BGO
+install -m 644 README* $PKG/usr/doc/$BGO
+install -m 644 $BGO/* $PKG/usr/doc/$BGO
+
 # Create service infos
+cd $PKG
 echo "Creating service information..."
 mkdir -p $PKG/install
 install -m 644 $CWD/slack-desc $PKG/install
@@ -59,6 +82,7 @@ mkdir -p $SRCDIR
 install -m 644 $CWD/$NAME.SlackBuild $SRCDIR
 install -m 644 $CWD/slack-desc $SRCDIR
 install -m 644 $CWD/*.desktop $SRCDIR
+install -m 644 $CWD/bgo_dict $SRCDIR
 install -m 644 $CWD/$NAME-$VERSION_MAJOR.$VERSION_MINOR* $SRCDIR
 
 # Fix permisions
@@ -88,6 +112,7 @@ md5sum $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz > $NAME-$LOCALE-$VERSION-$AR
 if [ "$1" = "--cleanup" ]; then
   echo "Cleaning up..."
   rm -rf $SRC
+  rm -rf $SRC_BGO
   rm -rf $PKG
 fi
 
