@@ -5,7 +5,7 @@ openoffice.org-bg: suite and an open-source project.  Compatible with all other
 openoffice.org-bg: major office suites, the product is free to download, use,
 openoffice.org-bg: and distribute.  This package was built from the bulgarian
 openoffice.org-bg: binary distribution of OOo, with modifications to support
-openoffice.org-bg: pain-free integration into the Slackware KDE & GNOME.
+openoffice.org-bg: pain-free integration into the Slackware KDE & GNOME. It
+openoffice.org-bg: also includes the dictionaries from BG Office.
 openoffice.org-bg:
-openoffice.org-bg: Homepage: http://www.openoffice.org/
 openoffice.org-bg: Packager: Georgi D. Sotirov <gdsotirov@dir.bg>
