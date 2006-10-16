@@ -10,16 +10,16 @@
 NAME=openoffice.org
 VERSION_MAJOR=2
 VERSION_MINOR=0
-VERSION_PATCH=3
+VERSION_PATCH=4
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-BUILD=2
+BUILD=1
 LOCALE=bg
 
 ARCH=i586
 
 OOo_PACK="OOo_${VERSION}_LinuxIntel_install_bg-en_rpm"
 BGO='bgoffice'
-BGO_PACK='OOo-full-pack'
+BGO_DICT='OOo-full-pack'
 
 if [ ! -d $TMP ]; then
   mkdir -p $TMP
@@ -32,16 +32,17 @@ mkdir -p $PKG
 # Extract data
 LOG_FILE=$CWD/package-$NAME-$VERSION.log
 cd $TMP
-# This package is retrived from http://ftp.spnet.net/ooo-bg/2.0.3/
+# This package is retrieved from ftp://ftp.spnet.net/ooo-bg/2.0.4/linux/
 OOo_ARCHIVE="$OOo_PACK.tar.gz"
-echo "Extracting archive $OOo_ARCHIVE..."
+echo "Extracting application archive $OOo_ARCHIVE..."
 tar -zxvf $CWD/$OOo_ARCHIVE > $LOG_FILE 2>&1
-BGO_ARCHIVE="$BGO_PACK.zip"
-echo "Extracting archive $BGO_ARCHIVE..."
+# This package is retrieved from ftp://ftp.spnet.net/ooo-bg/
+BGO_ARCHIVE="$BGO_DICT.zip"
+echo "Extracting dictionaries archive $BGO_ARCHIVE..."
 unzip $CWD/$BGO_ARCHIVE > $LOG_FILE 2>&1
 
 SRC=$TMP/$OOo_PACK
-SRC_BGO=$TMP/$BGO_PACK
+SRC_BGO=$TMP/$BGO_DICT
 
 echo "Extracting files from rpm packages..."
 cd $SRC/RPMS
@@ -64,7 +65,7 @@ mv $PKG/usr/share/mimelnk $PKG/opt/kde/share/
 cp -f $CWD/$NAME-$VERSION_MAJOR.$VERSION_MINOR* $PKG/usr/bin
 
 # Integration of bgoffice dictionaries
-echo "Integrating BG Office..."
+echo "Integrating dictionaries..."
 cd $SRC_BGO
 install -m 644 *.aff *.dic *.dat *.idx $PKG/opt/$NAME$VERSION_MAJOR.$VERSION_MINOR/share/dict/ooo
 cat $CWD/bgo_dict >> $PKG/opt/$NAME$VERSION_MAJOR.$VERSION_MINOR/share/dict/ooo/dictionary.lst
