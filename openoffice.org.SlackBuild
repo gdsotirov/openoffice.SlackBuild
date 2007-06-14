@@ -7,12 +7,12 @@
 #   ftp://ftp.spnet.net/ooo-bg/2.2/linux/
 #
 
-. ../slack-package.conf
+. /etc/slack-package.conf
 
 NAME=openoffice.org
 VERSION_MAJOR=2
 VERSION_MINOR=2
-VERSION_PATCH=0
+VERSION_PATCH=1
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
@@ -20,11 +20,11 @@ LOCALE=bg
 ARCH=i586
 
 if [ "$ARCH" == "i586" ]; then
-  PACK_NAME="OOo_${VERSION}_LinuxX86_install_bg-en_rpm"
+  PACK_NAME="OOo_${VERSION}_rc3_Linux_install_bg-en_rpm"
 elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="OOo_${VERSION}_LinuxX86-64_install_bg_en_rpm"
+  PACK_NAME="OOo_${VERSION}_rc3_LinuxX86-64_install_bg-en_rpm"
 else
-  PACK_NAME="OOo_${VERSION}_Linux${ARCH}_install_bg_en_rpm"
+  PACK_NAME="OOo_${VERSION}_rc3_Linux${ARCH}_install_bg-en_rpm"
 fi
 
 if [ ! -d $TMP ]; then
@@ -40,7 +40,12 @@ LOG_FILE=$CWD/package-$NAME-$VERSION.log
 cd $TMP
 ARCHIVE="$PACK_NAME.tar.gz"
 echo "Extracting application archive $ARCHIVE..."
-tar -zxvf $CWD/$ARCHIVE > $LOG_FILE 2>&1
+if [ -e $CWD/$ARCHIVE ]; then
+  tar -zxvf $CWD/$ARCHIVE > $LOG_FILE 2>&1
+else
+  echo "File $CWD/$ARCHIVE does not exists! Exiting."
+  exit 1
+fi
 
 SRC=$TMP/$PACK_NAME
 
