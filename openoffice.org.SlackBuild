@@ -4,15 +4,15 @@
 # Rewritten by Georgi D. Sotirov <gdsotirov@dir.bg>
 #
 # The source package is retrieved from
-#   ftp://ftp.spnet.net/ooo-bg/2.2/linux/
+#   ftp://ftp.spnet.net/ooo-bg/2.3/linux/
 #
 
-. /etc/slack-package.conf
+. ../slack-package.conf
 
 NAME=openoffice.org
 VERSION_MAJOR=2
-VERSION_MINOR=2
-VERSION_PATCH=1
+VERSION_MINOR=3
+VERSION_PATCH=0
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
@@ -20,11 +20,11 @@ LOCALE=bg
 ARCH=i586
 
 if [ "$ARCH" == "i586" ]; then
-  PACK_NAME="OOo_${VERSION}_rc3_Linux_install_bg-en_rpm"
+  PACK_NAME="OOo_${VERSION}_Linux_install_bg-en_rpm"
 elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="OOo_${VERSION}_rc3_LinuxX86-64_install_bg-en_rpm"
+  PACK_NAME="OOo_${VERSION}_LinuxX86-64_install_bg-en_rpm"
 else
-  PACK_NAME="OOo_${VERSION}_rc3_Linux${ARCH}_install_bg-en_rpm"
+  PACK_NAME="OOo_${VERSION}_Linux${ARCH}_install_bg-en_rpm"
 fi
 
 if [ ! -d $TMP ]; then
@@ -57,17 +57,12 @@ echo "Extracting files from rpm packages..."
 echo "Making integration..."
 ( cd $SRC/RPMS/desktop-integration
   unrpm openoffice.org-redhat-menus-$VERSION_MAJOR.$VERSION_MINOR-*.noarch.rpm >> $LOG_FILE 2>&1
-  mv usr $PKG
-  rm -r $PKG/usr/share/applnk-redhat
-  rm -r $PKG/usr/share/application-registry
-  rm $PKG/usr/share/applications/*.desktop
-  install -m 644 $PKG/opt/${NAME}${VERSION_MAJOR}.${VERSION_MINOR}/share/xdg/*.desktop $PKG/usr/share/applications
-  install -d -m 755 $PKG/opt/kde/share/icons/hicolor
-  cp -r $PKG/usr/share/icons/hicolor/* $PKG/opt/kde/share/icons/hicolor
-  install -d -m 755 $PKG/opt/kde/share/icons/locolor
-  cp -r $PKG/usr/share/icons/locolor/* $PKG/opt/kde/share/icons/locolor
-  install -d -m 755 $PKG/opt/kde/share/mimelnk/application
-  cp -r $pKG/usr/share/mimelnk/application/* $PKG/opt/kde/share/mimelnk/application )
+  mv usr $PKG )
+
+rm -r $PKG/usr/share/applnk-redhat
+rm -r $PKG/usr/share/application-registry
+rm $PKG/usr/share/applications/*.desktop
+install -m 644 $PKG/opt/${NAME}${VERSION_MAJOR}.${VERSION_MINOR}/share/xdg/*.desktop $PKG/usr/share/applications
 
 # Fix paths
 ( cd $PKG
@@ -77,12 +72,12 @@ echo "Making integration..."
 # Create service infos
 cd $PKG
 echo "Creating service information..."
-mkdir -p $PKG/install
-install -m 644 $CWD/slack-desc $PKG/install
-SRCDIR=$PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION
-mkdir -p $SRCDIR
-install -m 644 $CWD/$NAME.SlackBuild $SRCDIR
-install -m 644 $CWD/slack-desc $SRCDIR
+install -m 755 -d $PKG/install
+install -m 644 $CWD/slack-desc $PKG/install/slack-desc
+
+install -m 755 -d $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION
+install -m 644 $CWD/slack-desc       $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-desc
+install -m 644 $CWD/$NAME.SlackBuild $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/$NAME.SlackBuild
 
 # Fix permisions
 echo "Setting file and directory permissions..."
