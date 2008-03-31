@@ -11,8 +11,8 @@
 
 NAME=openoffice.org
 VERSION_MAJOR=2
-VERSION_MINOR=3
-VERSION_PATCH=1
+VERSION_MINOR=4
+VERSION_PATCH=0
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
@@ -73,10 +73,14 @@ install -m 644 $PKG/opt/${NAME}${VERSION_MAJOR}.${VERSION_MINOR}/share/xdg/*.des
 cd $PKG
 echo "Creating service information..."
 install -m 755 -d $PKG/install
-install -m 644 $CWD/slack-desc $PKG/install/slack-desc
+install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
+install -m 644 $CWD/slack-required $PKG/install/slack-required
+install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
 
 install -m 755 -d $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION
 install -m 644 $CWD/slack-desc       $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-desc
+install -m 644 $CWD/slack-required   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-required
+install -m 644 $CWD/slack-suggests   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-suggests
 install -m 644 $CWD/$NAME.SlackBuild $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/$NAME.SlackBuild
 
 # Fix permisions
