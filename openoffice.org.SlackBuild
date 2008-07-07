@@ -12,7 +12,7 @@
 NAME=openoffice.org
 VERSION_MAJOR=2
 VERSION_MINOR=4
-VERSION_PATCH=0
+VERSION_PATCH=1
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
@@ -20,9 +20,9 @@ LOCALE=bg
 ARCH=${ARCH:-i586}
 
 if [ "$ARCH" == "i586" ]; then
-  PACK_NAME="OOo_${VERSION}_LinuxX86_install_bg-en_rpm"
+  PACK_NAME="OOo_${VERSION}_Linux_install_bg-en_rpm"
 elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="OOo_${VERSION}_LinuxX86-64_install_bg-en_rpm"
+  PACK_NAME="OOo_${VERSION}_Linux-64_install_bg-en_rpm"
 else
   PACK_NAME="OOo_${VERSION}_Linux-${ARCH}_install_bg-en_rpm"
 fi
