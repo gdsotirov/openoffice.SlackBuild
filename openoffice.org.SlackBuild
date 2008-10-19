@@ -10,25 +10,33 @@
 . ../slack-package.conf
 
 NAME=openoffice.org
-VERSION_MAJOR=2
-VERSION_MINOR=4
-VERSION_PATCH=1
+VERSION_MAJOR=3
+VERSION_MINOR=0
+VERSION_PATCH=0
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
 
-ARCH=${ARCH:-i586}
+CWD=${CWD:-`pwd`}
+TMP=${TMP:-/tmp}
+ARCH=i686
 
-if [ "$ARCH" == "i586" ]; then
-  PACK_NAME="OOo_${VERSION}_Linux_install_bg-en_rpm"
-elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="OOo_${VERSION}_Linux-64_install_bg-en_rpm"
-else
-  PACK_NAME="OOo_${VERSION}_Linux-${ARCH}_install_bg-en_rpm"
+# Check for required utilities
+which unrpm >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "Utility "unrpm" is missing. Can not contiue."
+  exit 1
 fi
 
-if [ ! -d $TMP ]; then
-  mkdir -p $TMP
+if [ "$ARCH" == "i686" ]; then
+  PACK_NAME="OOo_${VERSION}_LinuxX86_install_bg-en_rpm"
+  SRC_DIR="OOo_${VERSION}_LinuxX86_install_bg-en_rpm"
+elif [ "$ARCH" == "x86_64" ]; then
+  PACK_NAME="OOo_${VERSION}_LinuxX86-64_install_bg-en_rpm"
+  SRC_DIR="OOo_${VERSION}_LinuxX86-64_install_bg-en_rpm"
+else
+  PACK_NAME="OOo_${VERSION}_Linux${ARCH}_install_bg-en_rpm"
+  SRC_DIR="OOo_${VERSION}_Linux${ARCH}_install_bg-en_rpm"
 fi
 
 # Package build location
@@ -44,40 +52,44 @@ if [ -e $CWD/$ARCHIVE ]; then
   tar -zxvf $CWD/$ARCHIVE > $LOG_FILE 2>&1
 else
   echo "File $CWD/$ARCHIVE does not exists! Exiting."
-  exit 1
+  exit 2
 fi
 
-SRC=$TMP/$PACK_NAME
+SRC=$TMP/$SRC_DIR
 
 echo "Extracting files from rpm packages..."
 ( cd $SRC/RPMS
   unrpm *.rpm >> $LOG_FILE 2>&1
-  mv opt $PKG )
+  mv opt $PKG
+)
 
 echo "Making integration..."
 ( cd $SRC/RPMS/desktop-integration
-  unrpm openoffice.org-redhat-menus-$VERSION_MAJOR.$VERSION_MINOR-*.noarch.rpm >> $LOG_FILE 2>&1
-  mv usr $PKG )
+  unrpm openoffice.org${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-*.noarch.rpm >> $LOG_FILE 2>&1
+  mv usr $PKG
+)
 
 rm -r $PKG/usr/share/applnk-redhat
 rm -r $PKG/usr/share/application-registry
 rm $PKG/usr/share/applications/*.desktop
-install -m 644 $PKG/opt/${NAME}${VERSION_MAJOR}.${VERSION_MINOR}/share/xdg/*.desktop $PKG/usr/share/applications
+install -m 644 $PKG/opt/${NAME}${VERSION_MAJOR}/share/xdg/*.desktop $PKG/usr/share/applications
 
 # Fix paths
 ( cd $PKG
-  sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/$NAME${VERSION_MAJOR}.$VERSION_MINOR
-  sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/$NAME${VERSION_MAJOR}.$VERSION_MINOR-printeradmin )
+  sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/$NAME${VERSION_MAJOR}
+  sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/$NAME${VERSION_MAJOR}-printeradmin )
 
 # Create service infos
 cd $PKG
 echo "Creating service information..."
 install -m 755 -d $PKG/install
+install -m 644 $CWD/doinst.sh      $PKG/install/doinst.sh
 install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
 install -m 644 $CWD/slack-required $PKG/install/slack-required
 install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
 
 install -m 755 -d $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION
+install -m 644 $CWD/doinst.sh        $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/doinst.sh
 install -m 644 $CWD/slack-desc       $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-desc
 install -m 644 $CWD/slack-required   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-required
 install -m 644 $CWD/slack-suggests   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-suggests
@@ -92,15 +104,15 @@ bin_perms $PKG
 # Create documentation
 DOCFILES="$DOCFILES LICENSE*"
 echo "Creating the documentation for $NAME-$VERSION..."
-( cd $PKG/opt/${NAME}${VERSION_MAJOR}.${VERSION_MINOR}/licenses
+( cd $PKG/opt/${NAME}${VERSION_MAJOR}/licenses
   create_docs $PKG $NAME-$LOCALE-$VERSION )
-( cd $PKG/opt/${NAME}${VERSION_MAJOR}.${VERSION_MINOR}/readmes
+( cd $PKG/opt/${NAME}${VERSION_MAJOR}/readmes
   create_docs $PKG $NAME-$LOCALE-$VERSION )
 
 # Make the package
 echo "Creating package $NAME-$VERSION..."
 cd $PKG
-makepkg -l y -c n $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz >> $LOG_FILE 2>&1
+makepkg -l y -c n -p $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz >> $LOG_FILE 2>&1
 cd $PKG_DIR
 cp $CWD/slack-desc $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txt
 md5sum $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz > $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz.md5
