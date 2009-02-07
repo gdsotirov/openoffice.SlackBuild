@@ -12,7 +12,7 @@
 NAME=openoffice.org
 VERSION_MAJOR=3
 VERSION_MINOR=0
-VERSION_PATCH=0
+VERSION_PATCH=1
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
@@ -46,10 +46,10 @@ mkdir -p $PKG
 # Extract data
 LOG_FILE=$CWD/package-$NAME-$VERSION.log
 cd $TMP
-ARCHIVE="$PACK_NAME.tar.gz"
+ARCHIVE="$PACK_NAME.tar.bz2"
 echo "Extracting application archive $ARCHIVE..."
 if [ -e $CWD/$ARCHIVE ]; then
-  tar -zxvf $CWD/$ARCHIVE > $LOG_FILE 2>&1
+  tar -jxvf $CWD/$ARCHIVE > $LOG_FILE 2>&1
 else
   echo "File $CWD/$ARCHIVE does not exists! Exiting."
   exit 2
