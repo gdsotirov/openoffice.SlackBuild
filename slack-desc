@@ -1,14 +1,15 @@
-openoffice.org-bg: OpenOffice.org 3 (Multiplatform, open-source office suite)
+openoffice.org-bg: OpenOffice.org 3 (Multiplatform, open-source productivity suite)
 openoffice.org-bg:
-openoffice.org-bg: OpenOffice.org is a multiplatform and multilingual office
-openoffice.org-bg: suite and an open-source project.  Compatible with all other
-openoffice.org-bg: major office suites, the product is free to download, use,
-openoffice.org-bg: and distribute.  This package was built from the bulgarian
-openoffice.org-bg: binary distribution of OOo, with modifications to support
-openoffice.org-bg: pain-free integration into the Slackware's KDE and Gnome.
+openoffice.org-bg: OpenOffice.org 3 is the leading open-source office software
+openoffice.org-bg: suite for word processing, spreadsheets, presentations,
+openoffice.org-bg: graphics, databases and more. It is available in many
+openoffice.org-bg: languages and works on all common computers. It stores all
+openoffice.org-bg: your data in an international open standard format and can
+openoffice.org-bg: also read and write files from other common office software
+opneoffice.org-bg: packages. It can be downloaded and used completely free of
+openoffice.org-bg: charge for any purpose.
 openoffice.org-bg:
-openoffice.org-bg: NOTE: You must separately install bulgarian dictionaries
+openoffice.org-bg: NOTE: You must separately install Bulgarian dictionaries
 openoffice.org-bg: as an extension.
-openoffice.org-bg:
 openoffice.org-bg:
 openoffice.org-bg: Packaged by Georgi D. Sotirov <gdsotirov@dir.bg>
