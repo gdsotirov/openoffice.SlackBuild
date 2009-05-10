@@ -14,12 +14,12 @@ VERSION_MAJOR=3
 VERSION_MINOR=1
 VERSION_PATCH=0
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-BUILD=1
+BUILD=2
 LOCALE=bg
 
 CWD=${CWD:-`pwd`}
 TMP=${TMP:-/tmp}
-ARCH=x86_64
+ARCH=i686
 
 function unrpm() {
   rpm2cpio < $1 | cpio --extract --make-directories --unconditional --preserve-modification-time
