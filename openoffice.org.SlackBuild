@@ -1,36 +1,45 @@
 #!/bin/sh
 #
 # Slackware build script for OpenOffice.org
-# Rewritten by Georgi D. Sotirov <gdsotirov@dir.bg>
+# Written by Georgi D. Sotirov <gdsotirov@dir.bg>
 #
 # The source package is retrieved from
-#   ftp://ftp.spnet.net/ooo-bg/2.3/linux/
+#   ftp://ftp.spnet.net/ooo-bg/
 #
 
 . ../slack-package.conf
 
 NAME=openoffice.org
 VERSION_MAJOR=3
-VERSION_MINOR=0
-VERSION_PATCH=1
+VERSION_MINOR=1
+VERSION_PATCH=0
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
 
 CWD=${CWD:-`pwd`}
 TMP=${TMP:-/tmp}
-ARCH=i686
+ARCH=x86_64
+
+function unrpm() {
+  rpm2cpio < $1 | cpio --extract --make-directories --unconditional --preserve-modification-time
+}
 
 # Check for required utilities
-which unrpm >/dev/null 2>&1
+which rpm2cpio >/dev/null 2>&1
 if [ $? -ne 0 ]; then
-  echo "Utility "unrpm" is missing. Can not contiue."
+  echo "Utility 'rpm2cpio' is missing. Please, install the package 'rpm' in order to continue."
   exit 1
+fi
+which cpio >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "Utility 'cpio' is missing. Please, install the package 'cpio' in order to continue."
+  exit 2
 fi
 
 if [ "$ARCH" == "i686" ]; then
-  PACK_NAME="OOo_${VERSION}_LinuxX86_install_bg-en_rpm"
-  SRC_DIR="OOo_${VERSION}_LinuxX86_install_bg-en_rpm"
+  PACK_NAME="OOo_${VERSION}_LinuxIntel_install_bg-en_rpm"
+  SRC_DIR="OOo_${VERSION}_LinuxIntel_install_bg-en_rpm"
 elif [ "$ARCH" == "x86_64" ]; then
   PACK_NAME="OOo_${VERSION}_LinuxX86-64_install_bg-en_rpm"
   SRC_DIR="OOo_${VERSION}_LinuxX86-64_install_bg-en_rpm"
@@ -39,49 +48,80 @@ else
   SRC_DIR="OOo_${VERSION}_Linux${ARCH}_install_bg-en_rpm"
 fi
 
-# Package build location
-PKG=$TMP/package-$NAME
-mkdir -p $PKG
-
-# Extract data
-LOG_FILE=$CWD/package-$NAME-$VERSION.log
-cd $TMP
-ARCHIVE="$PACK_NAME.tar.bz2"
-echo "Extracting application archive $ARCHIVE..."
-if [ -e $CWD/$ARCHIVE ]; then
-  tar -jxvf $CWD/$ARCHIVE > $LOG_FILE 2>&1
-else
-  echo "File $CWD/$ARCHIVE does not exists! Exiting."
-  exit 2
+SRC=$TMP/$SRC_DIR
+if [ -e $SRC_DIR ]; then
+  echo "Source directory '$SRC_DIR' already exists! Plaese, move it or remove it."
+  exit 1
 fi
 
-SRC=$TMP/$SRC_DIR
+# Package build location
+PKG=$TMP/package-$NAME
+if [ -e $PKG -a -d $PKG ]; then
+  echo "Package creation directory '$PKG' already exists! Please, move it or remove it."
+  exit 2
+fi
+mkdir -p $PKG
 
-echo "Extracting files from rpm packages..."
-( cd $SRC/RPMS
-  unrpm *.rpm >> $LOG_FILE 2>&1
-  mv opt $PKG
-)
+# Extract archive
+cd $TMP
+ARCHIVE="$PACK_NAME.tar.gz"
+echo "[Step 1 of 7] Extracting application archive $ARCHIVE..."
+if [ -e $CWD/$ARCHIVE ]; then
+  tar -zxvf $CWD/$ARCHIVE
+else
+  echo "File $CWD/$ARCHIVE does not exists! Exiting."
+  exit 3
+fi
 
-echo "Making integration..."
-( cd $SRC/RPMS/desktop-integration
-  unrpm openoffice.org${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-*.noarch.rpm >> $LOG_FILE 2>&1
-  mv usr $PKG
-)
+echo "[Step 2 of 7] Extracting files from rpm packages..."
+cd $SRC/RPMS
+for FILE in *.rpm; do
+  echo -n "$FILE: "
+  unrpm $FILE
+done
+mv opt $PKG
 
-rm -r $PKG/usr/share/applnk-redhat
-rm -r $PKG/usr/share/application-registry
-rm $PKG/usr/share/applications/*.desktop
-install -m 644 $PKG/opt/${NAME}${VERSION_MAJOR}/share/xdg/*.desktop $PKG/usr/share/applications
+echo "[Step 3 of 7] Desktop integration..."
+cd $SRC/RPMS/desktop-integration
+explodepkg ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-slackware-menus-${VERSION_MAJOR}.${VERSION_MINOR}-noarch-*.tgz
+mv usr $PKG
+cp -a opt/kde/share $PKG/usr
+rm -rf opt/kde
+
+cd $PKG/usr/bin
+rm -rf soffice
+ln -sf ../../opt/${NAME}${VERSION_MAJOR}/program/soffice soffice
+
+rm -rf $PKG/usr/share/applications/*.desktop
+cd $PKG/opt/${NAME}${VERSION_MAJOR}/share/xdg
+for FILE in *.desktop; do
+  install -m 644 $FILE $PKG/usr/share/applications/${NAME}${VERSION_MAJOR}-${FILE}
+done
 
 # Fix paths
-( cd $PKG
-  sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/$NAME${VERSION_MAJOR}
-  sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/$NAME${VERSION_MAJOR}-printeradmin )
+cd $PKG
+sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/${NAME}${VERSION_MAJOR}
+sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/${NAME}${VERSION_MAJOR}-printeradmin
+
+# Fix permisions
+echo "[Step 4 of 7] Setting file and directory permissions..."
+cd $PKG
+chown -R root:root *
+find . -type d -exec chmod 755 {} \;
+chmod -R u+rw,go+r-w,a-s .
+bin_perms $PKG
+
+# Create documentation
+DOCFILES="$DOCFILES LICENSE*"
+echo "[Step 5 of 7] Creating the documentation for $NAME-$VERSION..."
+( cd $PKG/opt/${NAME}${VERSION_MAJOR}         ; create_docs $PKG $NAME-$LOCALE-$VERSION )
+( cd $PKG/opt/${NAME}${VERSION_MAJOR}/licenses; create_docs $PKG $NAME-$LOCALE-$VERSION )
+( cd $PKG/opt/${NAME}${VERSION_MAJOR}/readmes ; create_docs $PKG $NAME-$LOCALE-$VERSION )
+install -m 644 $PKG/usr/doc/${NAME}-${LOCALE}-${VERSION}/LICENSE $PKG/usr/doc/${NAME}-${LOCALE}-${VERSION}/COPYING
 
 # Create service infos
+echo "[Step 6 of 7] Creating package's service information..."
 cd $PKG
-echo "Creating service information..."
 install -m 755 -d $PKG/install
 install -m 644 $CWD/doinst.sh      $PKG/install/doinst.sh
 install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
@@ -93,26 +133,12 @@ install -m 644 $CWD/doinst.sh        $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VER
 install -m 644 $CWD/slack-desc       $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-desc
 install -m 644 $CWD/slack-required   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-required
 install -m 644 $CWD/slack-suggests   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-suggests
-install -m 644 $CWD/$NAME.SlackBuild $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/$NAME.SlackBuild
-
-# Fix permisions
-echo "Setting file and directory permissions..."
-chown -R root:root *
-for dir in `find ./ -type d`; do chmod 755 $dir; done
-bin_perms $PKG
-
-# Create documentation
-DOCFILES="$DOCFILES LICENSE*"
-echo "Creating the documentation for $NAME-$VERSION..."
-( cd $PKG/opt/${NAME}${VERSION_MAJOR}/licenses
-  create_docs $PKG $NAME-$LOCALE-$VERSION )
-( cd $PKG/opt/${NAME}${VERSION_MAJOR}/readmes
-  create_docs $PKG $NAME-$LOCALE-$VERSION )
+install -m 644 $CWD/$NAME.SlackBuild $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/$NAME-$LOCALE.SlackBuild
 
 # Make the package
-echo "Creating package $NAME-$VERSION..."
+echo "[Step 7 of 7] Creating package $NAME-$VERSION..."
 cd $PKG
-makepkg -l y -c n -p $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz >> $LOG_FILE 2>&1
+makepkg -l y -c n -p $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz
 cd $PKG_DIR
 cp $CWD/slack-desc $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txt
 md5sum $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz > $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz.md5
