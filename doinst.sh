@@ -1,3 +1,4 @@
+# Update desktop database
 if (which update-desktop-database); then
   update-desktop-database -q /usr/share/applications
 fi
