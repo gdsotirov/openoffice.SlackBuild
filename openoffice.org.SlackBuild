@@ -1,9 +1,9 @@
 #!/bin/sh
 #
-# Slackware build script for OpenOffice.org
+# Slackware build script for OpenOffice.org Bulgarian
 # Written by Georgi D. Sotirov <gdsotirov@dir.bg>
 #
-# The source package is retrieved from
+# The source packages are retrieved from
 #   ftp://ftp.spnet.net/ooo-bg/
 #
 
@@ -11,8 +11,9 @@
 
 NAME=openoffice.org
 VERSION_MAJOR=3
-VERSION_MINOR=1
-VERSION_PATCH=1
+VERSION_MINOR=2
+VERSION_PATCH=0
+VER_BUILD=9483
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 BUILD=1
 LOCALE=bg
@@ -38,14 +39,14 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ "$ARCH" == "i686" ]; then
-  PACK_NAME="OOo_${VERSION}_LinuxIntel_install_en-bg_rpm"
-  SRC_DIR="OOo_${VERSION}_LinuxIntel_install_en-bg_rpm"
+  PACK_NAME="OOo_${VERSION}_LinuxIntel_install_bg_rpm"
+  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m12_native_packed-1_bg.${VER_BUILD}"
 elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="OOo_${VERSION}_LinuxX86-64_install_en-bg_rpm"
-  SRC_DIR="OOo_${VERSION}_LinuxX86-64_install_en-bg_rpm"
+  PACK_NAME="OOo_${VERSION}_LinuxX86-64_install_wJRE_bg_rpm"
+  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m12_native_packed-1_bg.${VER_BUILD}"
 else
-  PACK_NAME="OOo_${VERSION}_Linux${ARCH}_install_en-bg_rpm"
-  SRC_DIR="OOo_${VERSION}_Linux${ARCH}_install_en-bg_rpm"
+  PACK_NAME="OOo_${VERSION}_Linux${ARCH}_install_bg_rpm"
+  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m12_native_packed-1_bg.${VER_BUILD}"
 fi
 
 SRC=$TMP/$SRC_DIR
@@ -67,7 +68,7 @@ cd $TMP
 ARCHIVE="$PACK_NAME.tar.gz"
 echo "[Step 1 of 7] Extracting application archive $ARCHIVE..."
 if [ -e $CWD/$ARCHIVE ]; then
-  tar -zxvf $CWD/$ARCHIVE
+  tar -xvf $CWD/$ARCHIVE
 else
   echo "File $CWD/$ARCHIVE does not exists! Exiting."
   exit 3
@@ -83,14 +84,15 @@ mv opt $PKG
 
 echo "[Step 3 of 7] Desktop integration..."
 cd $SRC/RPMS/desktop-integration
-explodepkg ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-slackware-menus-${VERSION_MAJOR}.${VERSION_MINOR}-noarch-*.tgz
+unrpm ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-9472.noarch.rpm
 mv usr $PKG
-cp -a opt/kde/share $PKG/usr
-rm -rf opt/kde
 
-cd $PKG/usr/bin
-rm -rf soffice
-ln -sf ../../opt/${NAME}${VERSION_MAJOR}/program/soffice soffice
+( cd $PKG/usr/bin
+  rm -rf soffice
+  ln -sf /opt/${NAME}${VERSION_MAJOR}/program/soffice soffice )
+
+rm -rf $PKG/usr/share/application-registry
+rm -rf $PKG/usr/share/applnk-redhat
 
 rm -rf $PKG/usr/share/applications/*.desktop
 cd $PKG/opt/${NAME}${VERSION_MAJOR}/share/xdg
@@ -138,10 +140,10 @@ install -m 644 $CWD/$NAME.SlackBuild $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VER
 # Make the package
 echo "[Step 7 of 7] Creating package $NAME-$VERSION..."
 cd $PKG
-makepkg -l y -c n -p $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz
+makepkg -l y -c n -p $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txz
 cd $PKG_DIR
 cp $CWD/slack-desc $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txt
-md5sum $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz > $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.tgz.md5
+md5sum $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txz > $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txz.md5
 
 # Clean up (optionally)
 if [ "$1" = "--cleanup" ]; then
