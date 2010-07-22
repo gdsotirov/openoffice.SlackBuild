@@ -15,7 +15,7 @@ VERSION_MINOR=2
 VERSION_PATCH=1
 VER_BUILD=9502
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-BUILD=1
+BUILD=2
 LOCALE=bg
 
 CWD=${CWD:-`pwd`}
@@ -87,7 +87,7 @@ mv opt $PKG
 
 echo "[Step 3 of 7] Desktop integration..."
 cd $SRC/RPMS/desktop-integration
-unrpm ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-9472.noarch.rpm
+unrpm ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-${VER_BUILD}.noarch.rpm
 mv usr $PKG
 
 ( cd $PKG/usr/bin
