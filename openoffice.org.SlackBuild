@@ -1,26 +1,45 @@
 #!/bin/sh
 #
 # Slackware build script for OpenOffice.org Bulgarian
-# Written by Georgi D. Sotirov <gdsotirov@dir.bg>
+# Copyright (C) 2006-2011 Georgi D. Sotirov <gdsotirov@dir.bg>
+# The source packages are retrieved from ftp://ftp.spnet.net/ooo-bg/
 #
-# The source packages are retrieved from
-#   ftp://ftp.spnet.net/ooo-bg/
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+# Visit SlackPack at http://sotirov-bg.net/slackpack/
+#
+# $Id: openoffice.org.SlackBuild,v 1.20 2011/03/12 22:08:27 gsotirov Exp $
 #
 
 . ../slack-package.conf
 
 NAME=openoffice.org
 VERSION_MAJOR=3
-VERSION_MINOR=2
-VERSION_PATCH=1
-VER_BUILD=9502
+VERSION_MINOR=3
+VERSION_PATCH=0
+MVER=20
+MAGIC_VER=1
+VER_BUILD=9567
+VER_BUILD_MENUS=9556
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-BUILD=2
+BUILD=${BUILD:-1}
 LOCALE=bg
 
 CWD=${CWD:-`pwd`}
 TMP=${TMP:-/tmp}
-ARCH=${OOOARCH:-i686}
+ARCH=i686
 
 function unrpm() {
   rpm2cpio < $1 | cpio --extract --make-directories --unconditional --preserve-modification-time
@@ -38,18 +57,15 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-# OOo_3.2.1_Linux_x86_install-rpm_bg.tar.gz
-# OOo_3.2.1_Linux_x86-64_install-rpm_bg.tar.gz
-# OOO320_m18_native_packed-3_bg.9502
-if [ "$ARCH" == "i686" ]; then
-  PACK_NAME="OOo_${VERSION}_Linux_x86_install-rpm_bg"
-  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}0_m18_native_packed-3_bg.${VER_BUILD}"
+if [ "$ARCH" == "i686" ] ||  [ "$ARCH" == "i486" ]; then
+  PACK_NAME="OOo_${VERSION}_Linux_x86_install-rpm_${LOCALE}"
+  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m${MVER}_native_packed-${MAGIC_VER}_${LOCALE}.${VER_BUILD}"
 elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="OOo_${VERSION}_Linux_x86-64_install-rpm_bg"
-  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}0_m18_native_packed-1_bg.${VER_BUILD}"
+  PACK_NAME="OOo_${VERSION}_Linux_x86-64_install-rpm_${LOCALE}"
+  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m${MVER}_native_packed-${MAGIC_VER}_${LOCALE}.${VER_BUILD}"
 else
-  PACK_NAME="OOo_${VERSION}_Linux_${ARCH}_install-rpm_bg"
-  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}0_m18_native_packed-1_bg.${VER_BUILD}"
+  PACK_NAME="OOo_${VERSION}_Linux_${ARCH}_install-rpm_${LOCALE}"
+  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m${MVER}_native_packed-${MAGIC_VER}_${LOCALE}.${VER_BUILD}"
 fi
 
 SRC=$TMP/$SRC_DIR
@@ -87,7 +103,7 @@ mv opt $PKG
 
 echo "[Step 3 of 7] Desktop integration..."
 cd $SRC/RPMS/desktop-integration
-unrpm ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-${VER_BUILD}.noarch.rpm
+unrpm ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-${VER_BUILD_MENUS}.noarch.rpm
 mv usr $PKG
 
 ( cd $PKG/usr/bin
