@@ -20,7 +20,7 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: openoffice.org.SlackBuild,v 1.20 2011/03/12 22:08:27 gsotirov Exp $
+# $Id: openoffice.org.SlackBuild,v 1.21 2011/03/12 22:43:04 gsotirov Exp $
 #
 
 . ../slack-package.conf
@@ -39,7 +39,7 @@ LOCALE=bg
 
 CWD=${CWD:-`pwd`}
 TMP=${TMP:-/tmp}
-ARCH=i686
+ARCH=${ARCH_OO:-i686}
 
 function unrpm() {
   rpm2cpio < $1 | cpio --extract --make-directories --unconditional --preserve-modification-time
