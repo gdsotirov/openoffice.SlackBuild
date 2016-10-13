@@ -1,11 +1,11 @@
-avahi-0.6.29
-GConf >= 2.28
+GConf >= 3.2.3
+ORBit2 >= 2.14.19
+avahi >= 0.6.31
 gnome-vfs >= 2.24
-jre >= 6u20
-libbonobo >= 2.24
-libgnome >= 2.30
+jre >= 6u25
+libbonobo >= 2.32.1
+libgnome >= 2.32.1
 mysql-connector-odbc >= 5.1
-ORBit2 >= 2.14
-perl >= 5.10
+perl >= 5.12
 python >= 2.6
-sqlite >= 3.6.23.1
+sqlite >= 3.7.5
