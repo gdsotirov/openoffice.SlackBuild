@@ -1,7 +1,7 @@
 #!/bin/sh
 #
-# Slackware build script for OpenOffice.org Bulgarian
-# Copyright (C) 2006-2011 Georgi D. Sotirov <gdsotirov@dir.bg>
+# Slackware build script for OpenOffice.org
+# Copyright (C) 2006-2016 Georgi D. Sotirov <gdsotirov@dir.bg>
 # The source packages are retrieved from ftp://ftp.spnet.net/ooo-bg/
 #
 # This program is free software; you can redistribute it and/or
@@ -20,26 +20,23 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: openoffice.SlackBuild,v 1.1 2016/10/13 11:42:52 gsotirov Exp $
+# $Id: openoffice.SlackBuild,v 1.2 2016/10/13 11:43:51 gsotirov Exp $
 #
 
-. ../slack-package.conf
+. ../../slack-package.conf
 
 NAME=openoffice.org
 VERSION_MAJOR=3
-VERSION_MINOR=3
-VERSION_PATCH=0
-MVER=20
-MAGIC_VER=1
-VER_BUILD=9567
-VER_BUILD_MENUS=9556
+VERSION_MINOR=4
+VERSION_PATCH=1
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
+VER_BUILD_MENUS=9593
+ARCH=${ARCH_OO:-i686}
 BUILD=${BUILD:-1}
-LOCALE=bg
+LOCALE=en-US
 
 CWD=${CWD:-`pwd`}
 TMP=${TMP:-/tmp}
-ARCH=${ARCH_OO:-i686}
 
 function unrpm() {
   rpm2cpio < $1 | cpio --extract --make-directories --unconditional --preserve-modification-time
@@ -57,16 +54,16 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-if [ "$ARCH" == "i686" ] ||  [ "$ARCH" == "i486" ]; then
-  PACK_NAME="OOo_${VERSION}_Linux_x86_install-rpm_${LOCALE}"
-  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m${MVER}_native_packed-${MAGIC_VER}_${LOCALE}.${VER_BUILD}"
+# Apache_OpenOffice_incubating_3.4.1_Linux_x86_install-rpm_en-US.tar.gz
+# Apache_OpenOffice_incubating_3.4.1_Linux_x86-64_install-rpm_en-US.tar.gz
+if [ "$ARCH" == "i686" ] || [ "$ARCH" == "i486" ]; then
+  PACK_NAME="Apache_OpenOffice_incubating_${VERSION}_Linux_x86_install-rpm_${LOCALE}"
 elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="OOo_${VERSION}_Linux_x86-64_install-rpm_${LOCALE}"
-  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m${MVER}_native_packed-${MAGIC_VER}_${LOCALE}.${VER_BUILD}"
+  PACK_NAME="Apache_OpenOffice_incubating_${VERSION}_Linux_x86-64_install-rpm_${LOCALE}"
 else
-  PACK_NAME="OOo_${VERSION}_Linux_${ARCH}_install-rpm_${LOCALE}"
-  SRC_DIR="OOO${VERSION_MAJOR}${VERSION_MINOR}${VERSION_PATCH}_m${MVER}_native_packed-${MAGIC_VER}_${LOCALE}.${VER_BUILD}"
+  PACK_NAME="Apache_OpenOffice_incubating_${VERSION}_Linux_${ARCH}_install-rpm_${LOCALE}"
 fi
+SRC_DIR=${PACK_NAME}
 
 SRC=$TMP/$SRC_DIR
 if [ -e $SRC_DIR ]; then
@@ -87,7 +84,8 @@ cd $TMP
 ARCHIVE="$PACK_NAME.tar.gz"
 echo "[Step 1 of 7] Extracting application archive $ARCHIVE..."
 if [ -e $CWD/$ARCHIVE ]; then
-  tar -xvf $CWD/$ARCHIVE
+  tar -xvf $CWD/$ARCHIVE || exit 3
+  mv $TMP/${LOCALE} $SRC
 else
   echo "File $CWD/$ARCHIVE does not exists! Exiting."
   exit 3
@@ -133,12 +131,13 @@ chmod -R u+rw,go+r-w,a-s .
 bin_perms $PKG
 
 # Create documentation
-DOCFILES="$DOCFILES LICENSE*"
 echo "[Step 5 of 7] Creating the documentation for $NAME-$VERSION..."
-( cd $PKG/opt/${NAME}${VERSION_MAJOR}         ; create_docs $PKG $NAME-$LOCALE-$VERSION )
-( cd $PKG/opt/${NAME}${VERSION_MAJOR}/licenses; create_docs $PKG $NAME-$LOCALE-$VERSION )
-( cd $PKG/opt/${NAME}${VERSION_MAJOR}/readmes ; create_docs $PKG $NAME-$LOCALE-$VERSION )
-install -m 644 $PKG/usr/doc/${NAME}-${LOCALE}-${VERSION}/LICENSE $PKG/usr/doc/${NAME}-${LOCALE}-${VERSION}/COPYING
+DOCSDIR=$PKG/usr/doc/${NAME}-${VERSION}
+install -m 755 -d $DOCSDIR
+install -m 644 $SRC/licenses/LICENSE              $DOCSDIR/COPYING
+install -m 644 $SRC/licenses/NOTICE               $DOCSDIR/NOTICE
+install -m 644 $SRC/readmes/README_${LOCALE}      $DOCSDIR/README
+install -m 644 $SRC/readmes/README_${LOCALE}.html $DOCSDIR/README.html
 
 # Create service infos
 echo "[Step 6 of 7] Creating package's service information..."
