@@ -1,8 +1,8 @@
 GConf >= 3.2.6
-avahi >= 0.6.31
+avahi >= 0.6.32
 gnome-vfs >= 2.24
 jre | jdk
 mysql-connector-odbc >= 5.3
-perl >= 5.18
+perl >= 5.22
 python >= 2.7
-sqlite >= 3.7.13
+sqlite >= 3.13
