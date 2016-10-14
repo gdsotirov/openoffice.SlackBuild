@@ -1,15 +1,18 @@
-openoffice.org-bg: OpenOffice.org 3 (Multiplatform, open-source productivity suite)
-openoffice.org-bg:
-openoffice.org-bg: OpenOffice.org 3 is the leading open-source office software
-openoffice.org-bg: suite for word processing, spreadsheets, presentations,
-openoffice.org-bg: graphics, databases and more. It is available in many
-openoffice.org-bg: languages and works on all common computers. It stores all
-openoffice.org-bg: your data in an international open standard format and can
-openoffice.org-bg: also read and write files from other common office software
-opneoffice.org-bg: packages. It can be downloaded and used completely free of
-openoffice.org-bg: charge for any purpose.
-openoffice.org-bg:
-openoffice.org-bg: NOTE: You must separately install Bulgarian dictionaries
-openoffice.org-bg: as an extension.
-openoffice.org-bg:
-openoffice.org-bg: Packaged by Georgi D. Sotirov <gdsotirov@dir.bg>
+openoffice: Apache OpenOffice (The Free and Open Productivity Suite)
+openoffice:
+openoffice: Apache OpenOffice is an open-source office productivity software
+openoffice: suite. It is one of the successor projects of OpenOffice.org
+openoffice: and integrates features and improvements from IBM Lotus Symphony.
+openoffice: Apache OpenOffice is a close cousin of LibreOffice and NeoOffice.
+openoffice: It contains a word processor (Writer), a spreadsheet (Calc), a
+openoffice: presentation application (Impress), a drawing application (Draw), a
+openoffice: formula editor (Math), and a database management application (Base).
+openoffice: Apache OpenOffice's default file format is the OpenDocument Format
+openoffice: (ODF), an ISO/IEC standard. It can also read and write a wide
+openoffice: variety of other file formats, with particular attention to those
+openoffice: from Microsoft Office (although unlike LibreOffice it cannot save
+openoffice: Microsoft's newer XML formats like DOCX, only import them).
+openoffice:
+openoffice: NOTE: You must separately install language packs.
+openoffice:
+openoffice: Packaged by Georgi D. Sotirov <gdsotirov@dir.bg>
