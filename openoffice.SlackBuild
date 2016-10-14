@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Slackware build script for OpenOffice.org
+# Slackware build script for Apache OpenOffice
 # Copyright (C) 2006-2016 Georgi D. Sotirov <gdsotirov@dir.bg>
 # The source packages are retrieved from ftp://ftp.spnet.net/ooo-bg/
 #
@@ -20,17 +20,18 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: openoffice.SlackBuild,v 1.2 2016/10/13 11:43:51 gsotirov Exp $
+# $Id: openoffice.SlackBuild,v 1.3 2016/10/14 07:20:55 gsotirov Exp $
 #
 
 . ../../slack-package.conf
 
-NAME=openoffice.org
-VERSION_MAJOR=3
-VERSION_MINOR=4
+NAME=OpenOffice
+PNAME=$(echo $NAME | tr [:upper:] [:lower:])
+VERSION_MAJOR=4
+VERSION_MINOR=0
 VERSION_PATCH=1
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-VER_BUILD_MENUS=9593
+VER_BUILD_MENUS=9714
 ARCH=${ARCH_OO:-i686}
 BUILD=${BUILD:-1}
 LOCALE=en-US
@@ -54,14 +55,14 @@ if [ $? -ne 0 ]; then
   exit 2
 fi
 
-# Apache_OpenOffice_incubating_3.4.1_Linux_x86_install-rpm_en-US.tar.gz
-# Apache_OpenOffice_incubating_3.4.1_Linux_x86-64_install-rpm_en-US.tar.gz
+# Apache_OpenOffice_4.0.1_Linux_x86_install-rpm_en-US.tar.gz
+# Apache_OpenOffice_4.0.1_Linux_x86-64_install-rpm_en-US.tar.gz
 if [ "$ARCH" == "i686" ] || [ "$ARCH" == "i486" ]; then
-  PACK_NAME="Apache_OpenOffice_incubating_${VERSION}_Linux_x86_install-rpm_${LOCALE}"
+  PACK_NAME="Apache_${NAME}_${VERSION}_Linux_x86_install-rpm_${LOCALE}"
 elif [ "$ARCH" == "x86_64" ]; then
-  PACK_NAME="Apache_OpenOffice_incubating_${VERSION}_Linux_x86-64_install-rpm_${LOCALE}"
+  PACK_NAME="Apache_${NAME}_${VERSION}_Linux_x86-64_install-rpm_${LOCALE}"
 else
-  PACK_NAME="Apache_OpenOffice_incubating_${VERSION}_Linux_${ARCH}_install-rpm_${LOCALE}"
+  PACK_NAME="Apache_${NAME}_${VERSION}_Linux_${ARCH}_install-rpm_${LOCALE}"
 fi
 SRC_DIR=${PACK_NAME}
 
@@ -72,7 +73,7 @@ if [ -e $SRC_DIR ]; then
 fi
 
 # Package build location
-PKG=$TMP/package-$NAME
+PKG=$TMP/package-$PNAME
 if [ -e $PKG -a -d $PKG ]; then
   echo "Package creation directory '$PKG' already exists! Please, move it or remove it."
   exit 2
@@ -101,26 +102,26 @@ mv opt $PKG
 
 echo "[Step 3 of 7] Desktop integration..."
 cd $SRC/RPMS/desktop-integration
-unrpm ${NAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-${VER_BUILD_MENUS}.noarch.rpm
+unrpm ${PNAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-${VER_BUILD_MENUS}.noarch.rpm
 mv usr $PKG
 
 ( cd $PKG/usr/bin
   rm -rf soffice
-  ln -sf /opt/${NAME}${VERSION_MAJOR}/program/soffice soffice )
+  ln -sf /opt/${PNAME}${VERSION_MAJOR}/program/soffice soffice )
 
 rm -rf $PKG/usr/share/application-registry
 rm -rf $PKG/usr/share/applnk-redhat
 
 rm -rf $PKG/usr/share/applications/*.desktop
-cd $PKG/opt/${NAME}${VERSION_MAJOR}/share/xdg
+cd $PKG/opt/${PNAME}${VERSION_MAJOR}/share/xdg
 for FILE in *.desktop; do
-  install -m 644 $FILE $PKG/usr/share/applications/${NAME}${VERSION_MAJOR}-${FILE}
+  install -m 644 $FILE $PKG/usr/share/applications/${PNAME}${VERSION_MAJOR}-${FILE}
 done
 
 # Fix paths
 cd $PKG
-sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/${NAME}${VERSION_MAJOR}
-sed -i "s/\/etc\/$NAME/\/opt\/$NAME/" $PKG/usr/bin/${NAME}${VERSION_MAJOR}-printeradmin
+sed -i "s/\/etc\/$PNAME/\/opt\/$PNAME/" $PKG/usr/bin/${PNAME}${VERSION_MAJOR}
+sed -i "s/\/etc\/$PNAME/\/opt\/$PNAME/" $PKG/usr/bin/${PNAME}${VERSION_MAJOR}-printeradmin
 
 # Fix permisions
 echo "[Step 4 of 7] Setting file and directory permissions..."
@@ -131,8 +132,8 @@ chmod -R u+rw,go+r-w,a-s .
 bin_perms $PKG
 
 # Create documentation
-echo "[Step 5 of 7] Creating the documentation for $NAME-$VERSION..."
-DOCSDIR=$PKG/usr/doc/${NAME}-${VERSION}
+echo "[Step 5 of 7] Creating the documentation for $PNAME-$VERSION..."
+DOCSDIR=$PKG/usr/doc/${PNAME}-${VERSION}
 install -m 755 -d $DOCSDIR
 install -m 644 $SRC/licenses/LICENSE              $DOCSDIR/COPYING
 install -m 644 $SRC/licenses/NOTICE               $DOCSDIR/NOTICE
@@ -148,20 +149,22 @@ install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
 install -m 644 $CWD/slack-required $PKG/install/slack-required
 install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
 
-install -m 755 -d $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION
-install -m 644 $CWD/doinst.sh        $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/doinst.sh
-install -m 644 $CWD/slack-desc       $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-desc
-install -m 644 $CWD/slack-required   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-required
-install -m 644 $CWD/slack-suggests   $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/slack-suggests
-install -m 644 $CWD/$NAME.SlackBuild $PKG/usr/src/slackbuilds/$NAME-$LOCALE-$VERSION/$NAME-$LOCALE.SlackBuild
+SBDIR=$PKG/usr/src/slackbuilds/${PNAME}-${VERSION}
+install -m 755 -d $SBDIR
+install -m 644 $CWD/doinst.sh           $SBDIR/doinst.sh
+install -m 644 $CWD/slack-desc          $SBDIR/slack-desc
+install -m 644 $CWD/slack-required      $SBDIR/slack-required
+install -m 644 $CWD/slack-suggests      $SBDIR/slack-suggests
+install -m 644 $CWD/${PNAME}.SlackBuild $SBDIR/${PNAME}.SlackBuild
 
 # Make the package
-echo "[Step 7 of 7] Creating package $NAME-$VERSION..."
+echo "[Step 7 of 7] Creating package $PNAME-$VERSION..."
 cd $PKG
-makepkg -l y -c n -p $PKG_DIR/$NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txz
+PKGNAME=${PNAME}-${VERSION}-${ARCH}-${BUILD}${MYIN}
+makepkg -l y -c n -p $PKG_DIR/${PKGNAME}.txz
 cd $PKG_DIR
-cp $CWD/slack-desc $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txt
-md5sum $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txz > $NAME-$LOCALE-$VERSION-$ARCH-$BUILD$MYIN.txz.md5
+cp $CWD/slack-desc ${PKGNAME}.txt
+md5sum ${PKGNAME}.txz > ${PKGNAME}.txz.md5
 
 # Clean up (optionally)
 if [ "$1" = "--cleanup" ]; then
