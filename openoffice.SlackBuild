@@ -20,7 +20,7 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: openoffice.SlackBuild,v 1.3 2016/10/14 07:20:55 gsotirov Exp $
+# $Id: openoffice.SlackBuild,v 1.4 2016/10/14 08:43:11 gsotirov Exp $
 #
 
 . ../../slack-package.conf
@@ -28,11 +28,14 @@
 NAME=OpenOffice
 PNAME=$(echo $NAME | tr [:upper:] [:lower:])
 VERSION_MAJOR=4
-VERSION_MINOR=0
-VERSION_PATCH=1
+VERSION_MINOR=1
+VERSION_PATCH=3
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-VER_BUILD_MENUS=9714
-ARCH=${ARCH_OO:-i686}
+VER_BUILD_MENUS=9783
+ARCH=${ARCH:-i686}
+if [ "$ARCH" == "i386" -o "$ARCH" == "i486" -o "$ARCH" == "i686" ]; then
+  ARCH=i586
+fi
 BUILD=${BUILD:-1}
 LOCALE=en-US
 
@@ -57,7 +60,7 @@ fi
 
 # Apache_OpenOffice_4.0.1_Linux_x86_install-rpm_en-US.tar.gz
 # Apache_OpenOffice_4.0.1_Linux_x86-64_install-rpm_en-US.tar.gz
-if [ "$ARCH" == "i686" ] || [ "$ARCH" == "i486" ]; then
+if [ "$ARCH" == "i586" ]; then
   PACK_NAME="Apache_${NAME}_${VERSION}_Linux_x86_install-rpm_${LOCALE}"
 elif [ "$ARCH" == "x86_64" ]; then
   PACK_NAME="Apache_${NAME}_${VERSION}_Linux_x86-64_install-rpm_${LOCALE}"
@@ -102,7 +105,7 @@ mv opt $PKG
 
 echo "[Step 3 of 7] Desktop integration..."
 cd $SRC/RPMS/desktop-integration
-unrpm ${PNAME}${VERSION_MAJOR}.${VERSION_MINOR}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}-${VER_BUILD_MENUS}.noarch.rpm
+unrpm ${PNAME}${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-redhat-menus-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}-${VER_BUILD_MENUS}.noarch.rpm
 mv usr $PKG
 
 ( cd $PKG/usr/bin
