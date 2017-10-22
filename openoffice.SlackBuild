@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Slackware build script for Apache OpenOffice
-# Copyright (C) 2006-2016 Georgi D. Sotirov <gdsotirov@dir.bg>
+# Copyright (C) 2006-2017 Georgi D. Sotirov <gdsotirov@dir.bg>
 # The source packages are retrieved from ftp://ftp.spnet.net/ooo-bg/
 #
 # This program is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: openoffice.SlackBuild,v 1.4 2016/10/14 08:43:11 gsotirov Exp $
+# $Id: openoffice.SlackBuild,v 1.4.2.1 2017/10/22 10:01:22 gsotirov Exp $
 #
 
 . ../../slack-package.conf
@@ -29,7 +29,7 @@ NAME=OpenOffice
 PNAME=$(echo $NAME | tr [:upper:] [:lower:])
 VERSION_MAJOR=4
 VERSION_MINOR=1
-VERSION_PATCH=3
+VERSION_PATCH=4
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
 VER_BUILD_MENUS=9783
 ARCH=${ARCH:-i686}
