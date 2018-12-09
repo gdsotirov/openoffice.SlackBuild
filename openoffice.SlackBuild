@@ -20,7 +20,7 @@
 #
 # Visit SlackPack at http://sotirov-bg.net/slackpack/
 #
-# $Id: openoffice.SlackBuild,v 1.6 2018/01/06 19:20:49 gsotirov Exp $
+# $Id: openoffice.SlackBuild,v 1.7 2018/12/09 18:36:57 gsotirov Exp $
 #
 
 . ../../slack-package.conf
@@ -29,9 +29,9 @@ NAME=OpenOffice
 PNAME=$(echo $NAME | tr [:upper:] [:lower:])
 VERSION_MAJOR=4
 VERSION_MINOR=1
-VERSION_PATCH=5
+VERSION_PATCH=6
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-VER_BUILD_MENUS=9789
+VER_BUILD_MENUS=9790
 ARCH=${ARCH:-i686}
 if [ "$ARCH" == "i386" -o "$ARCH" == "i486" -o "$ARCH" == "i686" ]; then
   ARCH=i586
