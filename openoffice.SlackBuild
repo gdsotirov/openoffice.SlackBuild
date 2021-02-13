@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Slackware build script for Apache OpenOffice
-# Copyright (C) 2006-2020 Georgi D. Sotirov <gdsotirov@gmail.com>
+# Copyright (C) 2006-2021 Georgi D. Sotirov <gdsotirov@gmail.com>
 # The source packages are retrieved from ftp://ftp.spnet.net/ooo-bg/
 #
 # This program is free software; you can redistribute it and/or
@@ -27,9 +27,9 @@ NAME=OpenOffice
 PNAME=$(echo $NAME | tr [:upper:] [:lower:])
 VERSION_MAJOR=4
 VERSION_MINOR=1
-VERSION_PATCH=8
+VERSION_PATCH=9
 VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH
-VER_BUILD_MENUS=9800
+VER_BUILD_MENUS=9805
 ARCH=${ARCH:-i686}
 if [ "$ARCH" == "i386" -o "$ARCH" == "i486" -o "$ARCH" == "i686" ]; then
   ARCH=i586
@@ -116,7 +116,7 @@ rm -rf $PKG/usr/share/applnk-redhat
 rm -rf $PKG/usr/share/applications/*.desktop
 cd $PKG/opt/${PNAME}${VERSION_MAJOR}/share/xdg
 for FILE in *.desktop; do
-  install -m 644 $FILE $PKG/usr/share/applications/${PNAME}${VERSION_MAJOR}-${FILE}
+  install -m 644 -p $FILE $PKG/usr/share/applications/${PNAME}${VERSION_MAJOR}-${FILE}
 done
 
 # Fix paths
@@ -136,27 +136,27 @@ bin_perms $PKG
 echo "[Step 5 of 7] Creating the documentation for $PNAME-$VERSION..."
 DOCSDIR=$PKG/usr/doc/${PNAME}-${VERSION}
 install -m 755 -d $DOCSDIR
-install -m 644 $SRC/licenses/LICENSE              $DOCSDIR/COPYING
-install -m 644 $SRC/licenses/NOTICE               $DOCSDIR/NOTICE
-install -m 644 $SRC/readmes/README_${LOCALE}      $DOCSDIR/README
-install -m 644 $SRC/readmes/README_${LOCALE}.html $DOCSDIR/README.html
+install -m 644 -p $SRC/licenses/LICENSE              $DOCSDIR/COPYING
+install -m 644 -p $SRC/licenses/NOTICE               $DOCSDIR/NOTICE
+install -m 644 -p $SRC/readmes/README_${LOCALE}      $DOCSDIR/README
+install -m 644 -p $SRC/readmes/README_${LOCALE}.html $DOCSDIR/README.html
 
 # Create service infos
 echo "[Step 6 of 7] Creating package's service information..."
 cd $PKG
 install -m 755 -d $PKG/install
-install -m 644 $CWD/doinst.sh      $PKG/install/doinst.sh
-install -m 644 $CWD/slack-desc     $PKG/install/slack-desc
-install -m 644 $CWD/slack-required $PKG/install/slack-required
-install -m 644 $CWD/slack-suggests $PKG/install/slack-suggests
+install -m 644 -p $CWD/doinst.sh      $PKG/install/doinst.sh
+install -m 644 -p $CWD/slack-desc     $PKG/install/slack-desc
+install -m 644 -p $CWD/slack-required $PKG/install/slack-required
+install -m 644 -p $CWD/slack-suggests $PKG/install/slack-suggests
 
 SBDIR=$PKG/usr/src/slackbuilds/${PNAME}-${VERSION}
 install -m 755 -d $SBDIR
-install -m 644 $CWD/doinst.sh           $SBDIR/doinst.sh
-install -m 644 $CWD/slack-desc          $SBDIR/slack-desc
-install -m 644 $CWD/slack-required      $SBDIR/slack-required
-install -m 644 $CWD/slack-suggests      $SBDIR/slack-suggests
-install -m 644 $CWD/${PNAME}.SlackBuild $SBDIR/${PNAME}.SlackBuild
+install -m 644 -p $CWD/doinst.sh           $SBDIR/doinst.sh
+install -m 644 -p $CWD/slack-desc          $SBDIR/slack-desc
+install -m 644 -p $CWD/slack-required      $SBDIR/slack-required
+install -m 644 -p $CWD/slack-suggests      $SBDIR/slack-suggests
+install -m 644 -p $CWD/${PNAME}.SlackBuild $SBDIR/${PNAME}.SlackBuild
 
 # Make the package
 echo "[Step 7 of 7] Creating package $PNAME-$VERSION..."
